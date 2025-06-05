@@ -15,7 +15,7 @@ import './Lanyard.css';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
-export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], fov = 20, transparent = true }) {
+export default function Lanyard({ position = [0, 0, 30] as [number, number, number], gravity = [0, -40, 0] as [number, number, number], fov = 20, transparent = true }) {
   return (
     <div className="lanyard-wrapper">
       <Canvas
@@ -41,7 +41,13 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
 function Band({ maxSpeed = 50, minSpeed = 0 }) {
   const band = useRef<any>(), fixed = useRef<any>(), j1 = useRef<any>(), j2 = useRef<any>(), j3 = useRef<any>(), card = useRef<any>();
   const vec = new THREE.Vector3(), ang = new THREE.Vector3(), rot = new THREE.Vector3(), dir = new THREE.Vector3();
-  const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 4, linearDamping: 4 };
+  const segmentProps = { 
+    type: 'dynamic' as const, 
+    canSleep: true, 
+    colliders: false as const, 
+    angularDamping: 4, 
+    linearDamping: 4 
+  };
   const { nodes, materials } = useGLTF(cardGLB);
   const texture = useTexture(lanyard);
   const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
@@ -106,17 +112,17 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
   return (
     <>
       <group position={[0, 4, 0]}>
-        <RigidBody ref={fixed} {...segmentProps} type="fixed" />
-        <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps}>
+        <RigidBody ref={fixed} type="fixed" canSleep={true} angularDamping={4} linearDamping={4} />
+        <RigidBody position={[0.5, 0, 0]} ref={j1} type="dynamic" canSleep={true} angularDamping={4} linearDamping={4}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[1, 0, 0]} ref={j2} {...segmentProps}>
+        <RigidBody position={[1, 0, 0]} ref={j2} type="dynamic" canSleep={true} angularDamping={4} linearDamping={4}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[1.5, 0, 0]} ref={j3} {...segmentProps}>
+        <RigidBody position={[1.5, 0, 0]} ref={j3} type="dynamic" canSleep={true} angularDamping={4} linearDamping={4}>
           <BallCollider args={[0.1]} />
         </RigidBody>
-        <RigidBody position={[2, 0, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
+        <RigidBody position={[2, 0, 0]} ref={card} type={dragged ? 'kinematicPosition' : 'dynamic'} canSleep={true} angularDamping={4} linearDamping={4}>
           <CuboidCollider args={[0.8, 1.125, 0.01]} />
           <group
             scale={2.25}
