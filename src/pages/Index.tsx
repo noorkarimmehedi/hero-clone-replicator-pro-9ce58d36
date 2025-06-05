@@ -1,6 +1,7 @@
+
 import React from 'react';
 import AvatarGroup from '../components/AvatarGroup';
-import Lanyard from '../components/Lanyard';
+import ProfileCard from '../components/ProfileCard';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
@@ -65,9 +66,19 @@ const Index = () => {
           </Button>
         </div>
         
-        {/* Right content - 3D Lanyard */}
+        {/* Right content - ProfileCard */}
         <div className="flex-1 flex justify-center items-center">
-          <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} />
+          <ProfileCard
+            name="Javi A. Torres"
+            title="Software Engineer"
+            handle="javicodes"
+            status="Online"
+            contactText="Contact Me"
+            avatarUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face"
+            showUserInfo={true}
+            enableTilt={true}
+            onContactClick={() => console.log('Contact clicked')}
+          />
         </div>
       </main>
     </div>
