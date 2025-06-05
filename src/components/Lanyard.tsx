@@ -39,13 +39,13 @@ export default function Lanyard({ position = [0, 0, 30], gravity = [0, -40, 0], 
 }
 
 function Band({ maxSpeed = 50, minSpeed = 0 }) {
-  const band = useRef(), fixed = useRef(), j1 = useRef(), j2 = useRef(), j3 = useRef(), card = useRef();
+  const band = useRef<any>(), fixed = useRef<any>(), j1 = useRef<any>(), j2 = useRef<any>(), j3 = useRef<any>(), card = useRef<any>();
   const vec = new THREE.Vector3(), ang = new THREE.Vector3(), rot = new THREE.Vector3(), dir = new THREE.Vector3();
   const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 4, linearDamping: 4 };
   const { nodes, materials } = useGLTF(cardGLB);
   const texture = useTexture(lanyard);
   const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
-  const [dragged, drag] = useState(false);
+  const [dragged, drag] = useState<THREE.Vector3 | false>(false);
   const [hovered, hover] = useState(false);
   const [isSmall, setIsSmall] = useState(() =>
     typeof window !== 'undefined' && window.innerWidth < 1024
@@ -74,18 +74,20 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
   }, []);
 
   useFrame((state, delta) => {
-    if (dragged) {
+    if (dragged && card.current) {
       vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
       dir.copy(vec).sub(state.camera.position).normalize();
       vec.add(dir.multiplyScalar(state.camera.position.length()));
       [card, j1, j2, j3, fixed].forEach((ref) => ref.current?.wakeUp());
       card.current?.setNextKinematicTranslation({ x: vec.x - dragged.x, y: vec.y - dragged.y, z: vec.z - dragged.z });
     }
-    if (fixed.current) {
+    if (fixed.current && j1.current && j2.current && j3.current && card.current && band.current) {
       [j1, j2].forEach((ref) => {
-        if (!ref.current.lerped) ref.current.lerped = new THREE.Vector3().copy(ref.current.translation());
-        const clampedDistance = Math.max(0.1, Math.min(1, ref.current.lerped.distanceTo(ref.current.translation())));
-        ref.current.lerped.lerp(ref.current.translation(), delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed)));
+        if (ref.current) {
+          if (!ref.current.lerped) ref.current.lerped = new THREE.Vector3().copy(ref.current.translation());
+          const clampedDistance = Math.max(0.1, Math.min(1, ref.current.lerped.distanceTo(ref.current.translation())));
+          ref.current.lerped.lerp(ref.current.translation(), delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed)));
+        }
       });
       curve.points[0].copy(j3.current.translation());
       curve.points[1].copy(j2.current.lerped);
@@ -122,7 +124,12 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
             onPointerUp={(e) => (e.target.releasePointerCapture(e.pointerId), drag(false))}
-            onPointerDown={(e) => (e.target.setPointerCapture(e.pointerId), drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation()))))}>
+            onPointerDown={(e) => {
+              e.target.setPointerCapture(e.pointerId);
+              if (card.current) {
+                drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));
+              }
+            }}>
             <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial map={materials.base.map} map-anisotropy={16} clearcoat={1} clearcoatRoughness={0.15} roughness={0.9} metalness={0.8} />
             </mesh>
