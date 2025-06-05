@@ -48,7 +48,8 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
     angularDamping: 4, 
     linearDamping: 4 
   };
-  const { nodes, materials } = useGLTF(cardGLB);
+  const gltf = useGLTF(cardGLB) as any;
+  const { nodes, materials } = gltf;
   const texture = useTexture(lanyard);
   const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
   const [dragged, drag] = useState<THREE.Vector3 | false>(false);
