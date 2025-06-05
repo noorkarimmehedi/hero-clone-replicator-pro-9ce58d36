@@ -2,15 +2,12 @@
 /* eslint-disable react/no-unknown-property */
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { Canvas, extend, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
 import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from '@react-three/rapier';
-import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 
 import * as THREE from 'three';
 import './Lanyard.css';
-
-extend({ MeshLineGeometry, MeshLineMaterial });
 
 export default function Lanyard({ position = [0, 0, 30] as [number, number, number], gravity = [0, -40, 0] as [number, number, number], fov = 20, transparent = true }) {
   return (
@@ -49,9 +46,6 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
   const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
   const [dragged, drag] = useState<THREE.Vector3 | false>(false);
   const [hovered, hover] = useState(false);
-  const [isSmall, setIsSmall] = useState(() =>
-    typeof window !== 'undefined' && window.innerWidth < 1024
-  );
 
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
@@ -64,16 +58,6 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
       return () => void (document.body.style.cursor = 'auto');
     }
   }, [hovered, dragged]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSmall(window.innerWidth < 1024);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useFrame((state, delta) => {
     if (dragged && card.current) {
@@ -91,11 +75,20 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
           ref.current.lerped.lerp(ref.current.translation(), delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed)));
         }
       });
+      
+      // Update curve points
       curve.points[0].copy(j3.current.translation());
       curve.points[1].copy(j2.current.lerped);
       curve.points[2].copy(j1.current.lerped);
       curve.points[3].copy(fixed.current.translation());
-      band.current.geometry.setPoints(curve.getPoints(32));
+      
+      // Create tube geometry from curve
+      const tubeGeometry = new THREE.TubeGeometry(curve, 32, 0.02, 8, false);
+      if (band.current && band.current.geometry) {
+        band.current.geometry.dispose();
+        band.current.geometry = tubeGeometry;
+      }
+      
       ang.copy(card.current.angvel());
       rot.copy(card.current.rotation());
       card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z });
@@ -151,12 +144,8 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
         </RigidBody>
       </group>
       <mesh ref={band}>
-        <meshLineGeometry />
-        <meshLineMaterial
-          color="#666666"
-          lineWidth={1}
-          resolution={new THREE.Vector2(isSmall ? 1000 : 1000, isSmall ? 2000 : 1000)}
-        />
+        <tubeGeometry args={[curve, 32, 0.02, 8, false]} />
+        <meshStandardMaterial color="#666666" />
       </mesh>
     </>
   );
