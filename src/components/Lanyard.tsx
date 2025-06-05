@@ -46,6 +46,7 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
   const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
   const [dragged, drag] = useState<THREE.Vector3 | false>(false);
   const [hovered, hover] = useState(false);
+  const [tubeGeometry, setTubeGeometry] = useState<THREE.TubeGeometry | null>(null);
 
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
@@ -58,6 +59,16 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
       return () => void (document.body.style.cursor = 'auto');
     }
   }, [hovered, dragged]);
+
+  useEffect(() => {
+    // Initialize the tube geometry
+    const initialGeometry = new THREE.TubeGeometry(curve, 32, 0.02, 8, false);
+    setTubeGeometry(initialGeometry);
+    
+    return () => {
+      initialGeometry.dispose();
+    };
+  }, []);
 
   useFrame((state, delta) => {
     if (dragged && card.current) {
@@ -82,11 +93,15 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
       curve.points[2].copy(j1.current.lerped);
       curve.points[3].copy(fixed.current.translation());
       
-      // Create tube geometry from curve
-      const tubeGeometry = new THREE.TubeGeometry(curve, 32, 0.02, 8, false);
-      if (band.current && band.current.geometry) {
-        band.current.geometry.dispose();
-        band.current.geometry = tubeGeometry;
+      // Create new tube geometry from updated curve
+      if (tubeGeometry && band.current) {
+        const newGeometry = new THREE.TubeGeometry(curve, 32, 0.02, 8, false);
+        if (band.current.geometry) {
+          band.current.geometry.dispose();
+        }
+        band.current.geometry = newGeometry;
+        tubeGeometry.dispose();
+        setTubeGeometry(newGeometry);
       }
       
       ang.copy(card.current.angvel());
@@ -143,10 +158,11 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
           </group>
         </RigidBody>
       </group>
-      <mesh ref={band}>
-        <tubeGeometry args={[curve, 32, 0.02, 8, false]} />
-        <meshStandardMaterial color="#666666" />
-      </mesh>
+      {tubeGeometry && (
+        <mesh ref={band} geometry={tubeGeometry}>
+          <meshStandardMaterial color="#666666" />
+        </mesh>
+      )}
     </>
   );
 }
