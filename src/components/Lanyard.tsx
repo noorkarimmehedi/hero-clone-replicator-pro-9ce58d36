@@ -3,11 +3,10 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Canvas, extend, useFrame } from '@react-three/fiber';
-import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
+import { useTexture, Environment, Lightformer } from '@react-three/drei';
 import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from '@react-three/rapier';
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 
-import cardGLB from "../assets/lanyard/card.glb";
 import lanyard from "../assets/lanyard/lanyard.png";
 
 import * as THREE from 'three';
@@ -48,8 +47,7 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
     angularDamping: 4, 
     linearDamping: 4 
   };
-  const gltf = useGLTF(cardGLB) as any;
-  const { nodes, materials } = gltf;
+  
   const texture = useTexture(lanyard);
   const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
   const [dragged, drag] = useState<THREE.Vector3 | false>(false);
@@ -137,11 +135,22 @@ function Band({ maxSpeed = 50, minSpeed = 0 }) {
                 drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));
               }
             }}>
-            <mesh geometry={nodes.card.geometry}>
-              <meshPhysicalMaterial map={materials.base.map} map-anisotropy={16} clearcoat={1} clearcoatRoughness={0.15} roughness={0.9} metalness={0.8} />
+            {/* Simple card geometry instead of GLB */}
+            <mesh>
+              <boxGeometry args={[1.6, 2.25, 0.02]} />
+              <meshPhysicalMaterial 
+                color="#ffffff" 
+                clearcoat={1} 
+                clearcoatRoughness={0.15} 
+                roughness={0.9} 
+                metalness={0.8} 
+              />
             </mesh>
-            <mesh geometry={nodes.clip.geometry} material={materials.metal} material-roughness={0.3} />
-            <mesh geometry={nodes.clamp.geometry} material={materials.metal} />
+            {/* Simple clip geometry */}
+            <mesh position={[0, 1.8, 0.02]}>
+              <boxGeometry args={[0.3, 0.2, 0.05]} />
+              <meshPhysicalMaterial color="#888888" roughness={0.3} metalness={0.8} />
+            </mesh>
           </group>
         </RigidBody>
       </group>
