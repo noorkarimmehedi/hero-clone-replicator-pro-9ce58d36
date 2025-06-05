@@ -1,7 +1,6 @@
-
 import React from 'react';
-import ResumeCard from '../components/ResumeCard';
 import AvatarGroup from '../components/AvatarGroup';
+import Lanyard from '../components/Lanyard';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
@@ -66,9 +65,9 @@ const Index = () => {
           </Button>
         </div>
         
-        {/* Right content - Floating card */}
+        {/* Right content - 3D Lanyard */}
         <div className="flex-1 flex justify-center items-center">
-          <ResumeCard />
+          <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} />
         </div>
       </main>
     </div>
