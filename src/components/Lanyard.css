@@ -1,0 +1,10 @@
+
+.lanyard-wrapper {
+  width: 100%;
+  height: 400px;
+  cursor: auto;
+}
+
+.lanyard-wrapper canvas {
+  background: transparent !important;
+}

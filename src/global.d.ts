@@ -14,6 +14,13 @@ declare global {
     interface IntrinsicElements {
       meshLineGeometry: any;
       meshLineMaterial: any;
+      group: any;
+      mesh: any;
+      meshPhysicalMaterial: any;
+      ambientLight: any;
+      directionalLight: any;
+      pointLight: any;
+      primitive: any;
     }
   }
 }
