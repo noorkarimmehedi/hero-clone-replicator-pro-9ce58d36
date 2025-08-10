@@ -2,26 +2,22 @@
 import React from 'react';
 import AvatarGroup from '../components/AvatarGroup';
 import ProfileCard from '../components/ProfileCard';
-import { Button } from '@/components/ui/button';
+import { AnimatedButton } from '@/components/ui/animated-button';
+import { UnicornBackground } from '@/components/ui/unicorn-background';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0">
-        {/* Green light effects */}
-        <div className="absolute top-20 right-1/4 w-96 h-96 bg-emerald-500 rounded-full opacity-10 blur-3xl"></div>
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-emerald-400 rounded-full opacity-5 blur-3xl"></div>
-        
-        {/* Geometric patterns */}
-        <div className="absolute top-40 left-10 w-px h-32 bg-gradient-to-b from-emerald-500 to-transparent opacity-30"></div>
-        <div className="absolute bottom-40 right-10 w-px h-24 bg-gradient-to-t from-emerald-500 to-transparent opacity-30"></div>
-        
-        {/* Floating dots */}
-        <div className="absolute top-1/4 left-1/3 w-2 h-2 bg-emerald-400 rounded-full opacity-60 glow-effect"></div>
-        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-emerald-400 rounded-full opacity-40 glow-effect" style={{animationDelay: '1.5s'}}></div>
-        <div className="absolute top-1/2 left-1/4 w-1 h-1 bg-emerald-400 rounded-full opacity-50 glow-effect" style={{animationDelay: '3s'}}></div>
-      </div>
+      {/* Unicorn Studio Background Animation */}
+      <UnicornBackground 
+        projectId="hEFoJKcC8cD1sZVuNMBj"
+        width="100%"
+        height="100%"
+        className="z-0"
+      />
+      
+      {/* Optional overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/30 z-0" />
       
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between p-6">
@@ -32,14 +28,7 @@ const Index = () => {
             <a href="#" className="text-gray-400 hover:text-white transition-colors">Domain</a>
           </nav>
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="w-8 h-8 bg-gray-700 rounded-full border border-gray-600"></div>
-          <button className="text-gray-400 hover:text-white transition-colors">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </button>
-        </div>
+
       </header>
       
       {/* Main content */}
@@ -51,19 +40,24 @@ const Index = () => {
           </div>
           
           <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Stand out against the{' '}
             <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              crowd with your very own NFT resume
+              Transform your resume into a unique NFT.
             </span>
           </h1>
           
-          <p className="text-gray-400 text-lg mb-8 max-w-md">
-            Create, mint, and apply in minutes.
+          <p className="text-gray-400 text-xl mb-4 max-w-md">
+            Stand out in the digital talent marketplace with blockchain-verified credentials.
           </p>
           
-          <Button className="bg-white text-black hover:bg-gray-100 text-lg px-8 py-6 rounded-full font-semibold transition-all duration-300 hover:scale-105">
-            Mint your resume
-          </Button>
+          <p className="text-gray-400 text-lg mb-8 max-w-md">
+            Create, mint, and start applying in minutes.
+          </p>
+          
+          <div className="flex justify-start items-center w-full">
+            <AnimatedButton className="text-lg font-semibold">
+              Mint your resume
+            </AnimatedButton>
+          </div>
         </div>
         
         {/* Right content - ProfileCard */}
